@@ -68,12 +68,6 @@ jobs:
           sudo docker-compose up -d
           sudo docker-compose exec web python manage.py migrate
           sudo docker-compose exec web python manage.py collectstatic --no-input
-          sudo docker-compose exec web python manage.py shell
-          from django.contrib.contenttypes.models import ContentType
-          ContentType.objects.all().delete()
-          quit()
-          sudo docker-compose cp fixtures.json web:/app
-          sudo docker-compose exec web python manage.py loaddata fixtures.json
 
   send_message:
     runs-on: ubuntu-latest
