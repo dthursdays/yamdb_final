@@ -1,16 +1,13 @@
+from django.core.exceptions import PermissionDenied
 from django.db.models import Avg
 from django.shortcuts import get_object_or_404
-from django.core.exceptions import PermissionDenied
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, mixins, viewsets
 from reviews.models import Category, Genre, Review, Title
 
-from .permissions import IsAdminOrReadOnly, PermissionsOrReadOnly
-from .serializers import (CategorySerializer, CommentSerializer,
-                          GenreSerializer, ReviewUpdateSerializer,
-                          TitleCreateSerialize,
-                          TitleSerializer, ReviewSerializer)
+from . import serializers
 from .filters import TitleFilter
+from .permissions import IsAdminOrReadOnly, PermissionsOrReadOnly
 
 
 class CreateListDestroyViewSet(mixins.CreateModelMixin,
@@ -25,29 +22,29 @@ class CreateListDestroyViewSet(mixins.CreateModelMixin,
 
 class CategoryViewSet(CreateListDestroyViewSet):
     queryset = Category.objects.all()
-    serializer_class = CategorySerializer
+    serializer_class = serializers.CategorySerializer
 
 
 class GenreViewSet(CreateListDestroyViewSet):
     queryset = Genre.objects.all()
-    serializer_class = GenreSerializer
+    serializer_class = serializers.GenreSerializer
 
 
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all().annotate(Avg('reviews__score'))
-    serializer_class = TitleSerializer
+    serializer_class = serializers.TitleSerializer
     permission_classes = (IsAdminOrReadOnly,)
     filter_backends = (DjangoFilterBackend,)
     filterset_class = TitleFilter
 
     def get_serializer_class(self):
         if self.request.method in ['POST', 'PATCH']:
-            return TitleCreateSerialize
-        return TitleSerializer
+            return serializers.TitleCreateSerialize
+        return serializers.TitleSerializer
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
-    serializer_class = ReviewSerializer
+    serializer_class = serializers.ReviewSerializer
     permission_classes = (PermissionsOrReadOnly, )
 
     def get_rating(self, title):
@@ -96,12 +93,12 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
     def get_serializer_class(self):
         if self.request.method in ['PUT', 'PATCH']:
-            return ReviewUpdateSerializer
-        return ReviewSerializer
+            return serializers.ReviewUpdateSerializer
+        return serializers.ReviewSerializer
 
 
 class CommentViewSet(viewsets.ModelViewSet):
-    serializer_class = CommentSerializer
+    serializer_class = serializers.CommentSerializer
     permission_classes = (PermissionsOrReadOnly, )
 
     def perform_create(self, serializer):
