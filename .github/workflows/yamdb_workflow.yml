@@ -65,8 +65,8 @@ jobs:
           from django.contrib.contenttypes.models import ContentType
           ContentType.objects.all().delete()
           quit()
-          docker-compose cp fixtures.json web:/app
-          docker-compose exec web python manage.py loaddata fixtures.json
+          sudo docker-compose cp fixtures.json web:/app
+          sudo docker-compose exec web python manage.py loaddata fixtures.json
 
   send_message:
     runs-on: ubuntu-latest
