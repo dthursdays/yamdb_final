@@ -12,8 +12,8 @@ services:
     image: nsologub/yamdb:latest
     restart: always
     volumes:
-      - ./static:/app/static/
-      - ./media:/app/media/
+      - static_value:/app/static/
+      - media_value:/app/media/
     depends_on:
       - db
     env_file:
@@ -25,8 +25,8 @@ services:
       - "80:80"
     volumes:
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
-      - ./static:/var/html/static/
-      - ./media:media_value:/var/html/media/
+      - static_value:/var/html/static/
+      - media_value:/var/html/media/
     depends_on:
       - web
 
